@@ -234,6 +234,21 @@ export const api = {
     }
   },
 
+  // Create Property
+  async createProperty(data: Omit<Property, 'id' | 'agent' | 'agentId'> & { agentId: number }): Promise<any> {
+    return await apiFetch<any>('/properties', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Delete Property
+  async deleteProperty(id: number): Promise<any> {
+    return await apiFetch<any>(`/properties/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   // Agents
   async getAgents(): Promise<Agent[]> {
     try {

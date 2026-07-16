@@ -112,6 +112,53 @@ try {
             echo json_encode($response);
             exit();
         }
+    } else if ($method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($input['title']) || !isset($input['price']) || !isset($input['location'])) {
+            http_response_code(400);
+            echo json_encode(["message" => "Title, price, and location are required"]);
+            exit();
+        }
+
+        $title = trim($input['title']);
+        $description = isset($input['description']) ? trim($input['description']) : '';
+        $price = floatval($input['price']);
+        $location = trim($input['location']);
+        $images = isset($input['images']) ? implode(',', $input['images']) : '';
+        $beds = isset($input['beds']) ? intval($input['beds']) : 0;
+        $baths = isset($input['baths']) ? intval($input['baths']) : 0;
+        $sqft = isset($input['sqft']) ? intval($input['sqft']) : 0;
+        $type = isset($input['type']) ? trim($input['type']) : 'Villa';
+        $status = isset($input['status']) ? trim($input['status']) : 'Buy';
+        $agentId = isset($input['agentId']) ? intval($input['agentId']) : null;
+
+        $stmt = $pdo->prepare("INSERT INTO properties (title, description, price, location, images, beds, baths, sqft, type, status, agentId) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $description, $price, $location, $images, $beds, $baths, $sqft, $type, $status, $agentId]);
+        
+        $newId = $pdo->lastInsertId();
+        http_response_code(201);
+        echo json_encode([
+            "id" => intval($newId),
+            "title" => $title,
+            "price" => $price,
+            "location" => $location,
+            "message" => "Property listing created successfully"
+        ]);
+        exit();
+    } else if ($method === 'DELETE') {
+        if (isset($_GET['id'])) {
+            $id = intval($_GET['id']);
+            $stmt = $pdo->prepare("DELETE FROM properties WHERE id = ?");
+            $stmt->execute([$id]);
+            echo json_encode(["message" => "Property listing deleted successfully"]);
+            exit();
+        } else {
+            http_response_code(400);
+            echo json_encode(["message" => "Property ID is required"]);
+            exit();
+        }
     }
 } catch (Exception $e) {
     http_response_code(500);
