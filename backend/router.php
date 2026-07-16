@@ -41,6 +41,12 @@ if (preg_match('/^\/inquiries\/?$/', $path)) {
     exit();
 }
 
+// Route: /auth/login
+if (preg_match('/^\/auth\/login\/?$/', $path)) {
+    include __DIR__ . '/auth.php';
+    exit();
+}
+
 // Fallback 404
 http_response_code(404);
 echo json_encode(["message" => "Route not found"]);

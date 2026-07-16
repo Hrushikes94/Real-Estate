@@ -42,6 +42,28 @@ try {
             "createdAt" => date('c')
         ]);
         exit();
+    } else if ($method === 'GET') {
+        $stmt = $pdo->prepare("SELECT i.*, p.title as propertyTitle 
+                                FROM inquiries i 
+                                LEFT JOIN properties p ON i.propertyId = p.id 
+                                ORDER BY i.id DESC");
+        $stmt->execute();
+        $inquiries = $stmt->fetchAll();
+
+        $response = [];
+        foreach ($inquiries as $inq) {
+            $response[] = [
+                "id" => intval($inq['id']),
+                "name" => $inq['name'],
+                "email" => $inq['email'],
+                "message" => $inq['message'],
+                "propertyId" => $inq['propertyId'] ? intval($inq['propertyId']) : null,
+                "propertyTitle" => $inq['propertyTitle'] ?: "General Inquiry",
+                "createdAt" => $inq['createdAt']
+            ];
+        }
+        echo json_encode($response);
+        exit();
     }
 } catch (Exception $e) {
     http_response_code(500);

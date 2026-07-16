@@ -283,4 +283,31 @@ export const api = {
       };
     }
   },
+
+  // Admin Authentication
+  async login(username: string, password: string): Promise<{ access_token: string; user: { id: number; username: string; role: string } }> {
+    return await apiFetch<{ access_token: string; user: { id: number; username: string; role: string } }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+  },
+
+  // Get Inquiries (Admin)
+  async getInquiries(): Promise<any[]> {
+    try {
+      return await apiFetch<any[]>('/inquiries');
+    } catch (err) {
+      isOfflineMode = true;
+      return [
+        {
+          id: 1,
+          name: "John Doe",
+          email: "john@example.com",
+          message: "I am interested in scheduling a viewing for Obsidian Pavilion next Tuesday.",
+          propertyTitle: "The Obsidian Pavilion",
+          createdAt: new Date().toISOString()
+        }
+      ];
+    }
+  },
 };
