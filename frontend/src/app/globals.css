@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FFFFFF;
+  --background-alt: #F7F5F2;
+  --foreground: #0B1F3A;
+  
+  --color-primary: #0B1F3A;
+  --color-accent-dark: #8B5E3C;
+  --color-accent-light: #C9A27E;
+  --color-off-white: #F7F5F2;
+  --color-deep-blue: #0B1F3A;
+  --color-earthy-brown: #8B5E3C;
+  --color-earthy-tan: #C9A27E;
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-accent-dark: var(--color-accent-dark);
+  --color-accent-light: var(--color-accent-light);
+  --color-off-white: var(--color-off-white);
+  --color-deep-blue: var(--color-deep-blue);
+  --color-earthy-brown: var(--color-earthy-brown);
+  --color-earthy-tan: var(--color-earthy-tan);
+  
+  --font-poppins: var(--font-poppins);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background: var(--background-alt);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Editorial Style Helpers */
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F5F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9A27E;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B5E3C;
+}
+
+/* Custom cursor and interactive hover utility styles */
+.cursor-none-desktop {
+  @media (min-width: 1025px) {
+    cursor: none !important;
+  }
+}
+
+.magnetic-btn {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.magnetic-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Page transit reveals */
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 2rem;
+}
