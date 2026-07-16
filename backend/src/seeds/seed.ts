@@ -9,11 +9,11 @@ import { Inquiry } from '../entities/inquiry.entity';
 dotenv.config();
 
 const AppDataSource = new DataSource({
-  type: 'postgres',
+  type: 'mysql',
   host: process.env.DATABASE_HOST || 'localhost',
-  port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-  username: process.env.DATABASE_USER || 'postgres',
-  password: process.env.DATABASE_PASSWORD || 'postgres',
+  port: parseInt(process.env.DATABASE_PORT || '3306', 10),
+  username: process.env.DATABASE_USER || 'root',
+  password: process.env.DATABASE_PASSWORD || '',
   database: process.env.DATABASE_NAME || 'real_estate_db',
   entities: [Agent, Property, User, Inquiry],
   synchronize: true,
