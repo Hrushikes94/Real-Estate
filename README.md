@@ -4,8 +4,8 @@ An award-winning editorial-style real estate web application curated with contem
 
 ## Tech Stack
 
-*   **Frontend:** Next.js (App Router, TypeScript), Tailwind CSS v4, Framer Motion for scroll reveals and physics-based spring cursors.
-*   **Backend:** NestJS (TypeScript, REST API), TypeORM, PostgreSQL.
+*   **Frontend:** Next.js (App Router, TypeScript), Tailwind CSS v4, Framer Motion for scroll reveals and physics-based spring cursors. Compiled as a **Static HTML Export** for Hostinger compatibility.
+*   **Backend:** Modern, lightweight PHP REST API (MySQL, PDO). Native compatibility with Hostinger Shared and Cloud hosting.
 *   **Aesthetics:** Poppins font (600/700/800 bold weights) loaded via `next/font`, mix-blend-difference headers, high-contrast layouts, custom canvas-confetti prompts, and visual coordinate mapping plots.
 
 ---
@@ -13,21 +13,22 @@ An award-winning editorial-style real estate web application curated with contem
 ## Workspace Structure
 
 ```
-├── backend/            # NestJS Backend API service
-│   ├── src/
-│   │   ├── entities/   # TypeORM schema mappings (Agent, Property, User, Inquiry)
-│   │   ├── modules/    # API logical blocks (Auth, Users, Agents, Properties, Inquiries)
-│   │   ├── seeds/      # Standalone database seeder
-│   │   └── main.ts     # Bootstrapper (CORS, Pipes, Swagger OpenAPI)
-│   └── .env            # Environment configurations (DB, Secrets)
+├── backend/            # PHP Backend API service
+│   ├── .htaccess       # Apache rewrite rules for clean REST URLs
+│   ├── db.php          # Database helper & manual .env parser
+│   ├── seed.php        # Rebuilds tables & inserts default listings
+│   ├── properties.php  # Handles /properties & /properties/{id} REST endpoints
+│   ├── agents.php      # Handles /agents & /agents/{id} profile requests
+│   ├── inquiries.php   # Handles /inquiries viewing submission requests
+│   └── router.php      # Router helper for local PHP dev server testing
 │
 ├── frontend/           # Next.js App Router Client app
+│   ├── out/            # Static build output ready for Hostinger
 │   ├── src/
 │   │   ├── app/        # Pages router (Home, About, Contact, Listings, Details)
 │   │   ├── components/ # Custom cursor, dynamic preloader, navbar, footer
 │   │   └── utils/      # API client wrappers with offline mock dataset fallbacks
 │
-├── docker-compose.yml  # Orchestrates development PostgreSQL instance
 └── README.md           # This execution manual
 ```
 
@@ -35,67 +36,49 @@ An award-winning editorial-style real estate web application curated with contem
 
 ## Local Setup & Run Instructions
 
-### 1. Database Setup
+### 1. Backend (PHP & MySQL) Local Server
+To run the PHP API locally (points to your Hostinger database remotely as whitelisted):
+1.  Open a terminal inside the `backend/` folder.
+2.  Start the PHP built-in development server with the router script:
+    ```bash
+    php -S localhost:5000 router.php
+    ```
 
-Ensure you have Docker running locally, and start the PostgreSQL database container from the root directory:
-
-```bash
-docker compose up -d
-```
-
-*Note: If you do not have Docker installed, you can point the backend to any existing local or cloud PostgreSQL database. Simply update the database connection credentials in `backend/.env`.*
-
-### 2. Backend (NestJS) Run Instructions
-
-Navigate to the `backend/` directory, install packages, run the seed script to populate mock entries, and start the development server:
-
-```bash
-cd backend
-
-# Install dependencies
-npm install
-
-# Run database seeder (seeds 1 Admin User, 3 Agents, and 5 Luxury Listings)
-npm run seed
-
-# Start NestJS development server
-npm run start:dev
-```
-
-The backend API will start on [http://localhost:5000](http://localhost:5000).
-*   **OpenAPI Swagger UI Documentation:** Accessible at [http://localhost:5000/api/docs](http://localhost:5000/api/docs).
-
-### 3. Frontend (Next.js) Run Instructions
-
-Navigate to the `frontend/` directory, install packages, and start the development server:
-
-```bash
-cd ../frontend
-
-# Install dependencies
-npm install
-
-# Start Next.js development server
-npm run dev
-```
-
-The client application will start on [http://localhost:3000](http://localhost:3000).
+### 2. Frontend (Next.js) Local Server
+To run the Next.js development server:
+1.  Open a terminal inside the `frontend/` folder.
+2.  Run the development script:
+    ```bash
+    npm run dev
+    ```
+    *   The frontend will start on [http://localhost:3000](http://localhost:3000).
+    *   It will query your local PHP server on port 5000.
 
 ---
 
-## Design System Tokens (Tailwind CSS v4)
+## Hostinger Production Deployment
 
-Tailwind CSS v4 introduces a CSS-first configuration. The design system colors and variables are declared directly inside `frontend/src/app/globals.css` using the `@theme` directive:
+### 1. Backend Deployment (PHP)
+1.  **Pull Git updates on Hostinger hPanel:**
+    *   Go to hPanel -> **Git** -> Click **Deploy** to retrieve the latest PHP repository files.
+2.  **Create `.env` file on Hostinger:**
+    *   In Hostinger File Manager, go to `public_html/realestate/backend/`.
+    *   Create a file named **`.env`** and add your MySQL database connection:
+        ```env
+        DATABASE_HOST=localhost
+        DATABASE_PORT=3306
+        DATABASE_USER=your_hostinger_db_username
+        DATABASE_PASSWORD=your_hostinger_db_password
+        DATABASE_NAME=your_hostinger_db_name
+        ```
+3.  **Seed the Database:**
+    *   In your web browser, visit: `http://yourdomain.com/realestate/backend/seed.php` to drop/recreate tables and insert listings. (Delete `seed.php` after seeding for security).
 
-*   **Deep Navy (`#0B1F3A`):** Used as primary background and high-contrast typography color.
-*   **Earthy Brown (`#8B5E3C`):** Accent brand borders and cursors.
-*   **Earthy Tan (`#C9A27E`):** Interaction highlights and scrollbars.
-*   **Off-White (`#F7F5F2`):** Background canvas panels.
-
----
-
-## Offline Catalog Fallback Mode
-
-To ensure the Next.js frontend is fully reviewable and interactive immediately, the API layer (`frontend/src/utils/api.ts`) detects if the NestJS backend/PostgreSQL database is offline. 
-
-If the backend cannot be reached, the frontend automatically falls back to an offline mock dataset, allowing search filters, page detail routing, and schedule forms to function smoothly in mockup mode.
+### 2. Frontend Deployment (Static Next.js)
+1.  **Build the static site locally:**
+    *   Navigate to the `frontend/` folder and run `npm run build`.
+2.  **Upload to Hostinger:**
+    *   Open `frontend/out/` on your computer.
+    *   Compress all files inside `out/` into a ZIP archive (e.g. `frontend.zip`).
+    *   In Hostinger File Manager, navigate to `public_html/`.
+    *   Upload `frontend.zip` and extract it directly into `public_html/`.
