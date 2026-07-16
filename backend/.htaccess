@@ -1,0 +1,33 @@
+RewriteEngine On
+
+# Allow CORS preflight requests to pass through RewriteRules
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Prevent directory listings
+Options -Indexes
+
+# Rewrite rule for /properties
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^properties/?$ properties.php [QSA,L]
+
+# Rewrite rule for /properties/{id}
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^properties/([0-9]+)/?$ properties.php?id=$1 [QSA,L]
+
+# Rewrite rule for /agents
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^agents/?$ agents.php [QSA,L]
+
+# Rewrite rule for /agents/{id}
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^agents/([0-9]+)/?$ agents.php?id=$1 [QSA,L]
+
+# Rewrite rule for /inquiries
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^inquiries/?$ inquiries.php [QSA,L]
