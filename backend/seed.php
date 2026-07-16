@@ -1,9 +1,28 @@
 <?php
+// Set plain text header so debug output is easily readable in the browser
+header('Content-Type: text/plain');
+
 require_once __DIR__ . '/db.php';
 
-// Set simple text header for CLI run readability
-if (php_sapi_name() === 'cli') {
-    header('Content-Type: text/plain');
+// Diagnostic check for the .env file presence
+$envPath = __DIR__ . '/.env';
+if (!file_exists($envPath)) {
+    echo "DIAGNOSTIC LOG:\n";
+    echo "[FAIL] The .env file was NOT found in the folder: " . __DIR__ . "\n";
+    echo "Files currently in this folder:\n";
+    $files = scandir(__DIR__);
+    foreach ($files as $file) {
+        if ($file !== '.' && $file !== '..') {
+            echo "  - $file\n";
+        }
+    }
+    echo "========================================\n\n";
+} else {
+    echo "DIAGNOSTIC LOG:\n";
+    echo "[SUCCESS] The .env file EXISTS in: " . __DIR__ . "\n";
+    echo "File size: " . filesize($envPath) . " bytes\n";
+    echo "File permissions: " . substr(sprintf('%o', fileperms($envPath)), -4) . "\n";
+    echo "========================================\n\n";
 }
 
 try {
