@@ -31,10 +31,12 @@ async function run() {
 
   // Clear tables to prevent duplicate keys
   console.log('Clearing database tables...');
-  await inquiryRepo.delete({});
-  await propertyRepo.delete({});
-  await agentRepo.delete({});
-  await userRepo.delete({});
+  await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0');
+  await inquiryRepo.clear();
+  await propertyRepo.clear();
+  await agentRepo.clear();
+  await userRepo.clear();
+  await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1');
 
   console.log('Seeding admin user...');
   const hashedPassword = await bcrypt.hash('admin123', 10);
